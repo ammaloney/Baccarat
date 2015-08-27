@@ -1,0 +1,5 @@
+21,T,B,P,P,B,P,B,B,P,B,P,P,P,P,P,P,B,P,P,B,B,P,P,P,P,T,P,P,B,B,T,P,B,B,B,P,P,P,B,B,T,P,T,P,P,P,B,B,B,B,B,P,P,B,B,B,P,B,P,T,P,T,B,B,B,B,P,B,P,P,P,B,P,P,T,B,B,B,B,P
+22,P,P,P,T,B,B,T,B,P,P,P,P,B,B,P,T,B,B,B,B,P,P,T,B,T,P,B,P,B,P,T,P,B,B,B,P,B,B,P,P,B,P,P,B,B,B,P,B,P,P,P,B,T,B,P,P,T,B,B,P,B,B,B,P,P,P,B,B,P,P,B,P,P,P,B,P,B,P,P,P,B
+23,B,B,P,P,P,B,P,P,B,P,P,B,P,B,B,B,P,P,B,B,P,B,P,B,B,B,T,P,B,B,P,B,T,B,B,P,T,B,P,T,P,B,P,B,B,P,T,B,B,P,P,P,P,P,B,P,B,T,P,P,B,P,P,T,P,P,T,P,P,P,B,P,P,B,P,B,B,T,P,P
+24,T,B,P,B,P,B,P,B,P,T,P,B,B,P,P,P,P,P,P,T,B,P,P,B,P,B,P,B,P,T,B,P,B,T,P,T,P,P,T,P,B,B,P,P,P,B,P,B,P,P,B,B,P,P,P,P,P,B,T,B,P,P,B,B,B,B,B,P,P,P,B,P,T,P,P,B,B,B,P
+25,P,T,P,P,B,P,T,P,T,B,B,B,T,P,P,B,P,B,P,B,B,B,B,T,T,B,B,B,B,P,P,B,B,T,B,B,P,P,P,B,P,B,B,B,B,B,P,P,P,P,P,B,P,P,P,B,P,B,P,B,P,P,B,P,P,P,B,P,P,P,P,T,B,P,P,B,T,B,B,P,B
