@@ -18,6 +18,13 @@ def prepareShoe(aShoe, discards):
     discards.cards = []
     return aShoe, discards
     
+def burn_top_cards(aShoe, discards):
+    print(aShoe.cards[-1])
+    if aShoe.cards[-1].value == 0:
+        aShoe.move_cards(discards, 11)
+    else:
+        aShoe.move_cards(discards, aShoe.cards[-1].rank + 1)
+    
 
 def getDecision(aShoe, discards):
     """
@@ -37,7 +44,7 @@ def getDecision(aShoe, discards):
         aShoe.cut_cards()
         assert len(discards.cards) == 0
         assert len(aShoe.cards) == 416
-
+        
     natural = False
     bankerStands = False
     playerStands = False
@@ -163,6 +170,7 @@ if __name__ == '__main__':
     aShoe = Shoe()
     discards = Shoe()
     aShoe, discards = prepareShoe(aShoe, discards)
+    burn_top_cards(aShoe, discards)
     while len(aShoe.cards) > 16:
         scorecard.append(getDecision(aShoe, discards))
     print(scorecard)
