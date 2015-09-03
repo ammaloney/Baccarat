@@ -10,7 +10,7 @@ from CasinoCards import Hand, Shoe
 
 scorecard = []
 
-def prepareShoe(aShoe, discards):
+def prepareShoe():
     aShoe = Shoe()
     discards = Shoe()
     aShoe.shuffle()
@@ -64,36 +64,36 @@ def getDecision(aShoe, discards):
     if bankerPoints > 9:
         bankerPoints -= 10
 
-#    print('Player has the', playerHand.cards[0], 'and the', 
-#          playerHand.cards[1], 'for a total of', playerPoints )
-#    print('Banker has the', bankerHand.cards[0], 'and the', 
-#          bankerHand.cards[1], 'for a total of', bankerPoints )
+    print('Player has the', playerHand.cards[0], 'and the', 
+          playerHand.cards[1], 'for a total of', playerPoints )
+    print('Banker has the', bankerHand.cards[0], 'and the', 
+          bankerHand.cards[1], 'for a total of', bankerPoints )
 
     if playerPoints > 7 :
-#        print('Player has a natural, there will be no more cards.')
+        print('Player has a natural, there will be no more cards.')
         natural = True
     if bankerPoints > 7 :
-#        print('Banker has a natural, there will be no more cards.')
+        print('Banker has a natural, there will be no more cards.')
         natural = True
     if not natural:
         if playerPoints > 5:
-#            print('Player stands with', playerPoints)
+            print('Player stands with', playerPoints)
             playerStands = True
         else:
             playerStands = False
             aShoe.move_cards(playerHand, 1)
-#            print('Player gets the', playerHand.cards[-1], end='')
+            print('Player gets the', playerHand.cards[-1], end='')
             playerPoints += playerHand.cards[-1].value
             if playerPoints > 9:
                 playerPoints -= 10
-#            print(' for a total of ', playerPoints)
+            print(' for a total of ', playerPoints)
         
         if bankerPoints == 7:
             bankerStands = True
-#            print('Banker Stands')
-        if playerStands and (bankerPoints > 5 and bankerPoints < 7):
+            print('Banker Stands')
+        if playerStands and (5 < bankerPoints < 7):
             bankerStands = True
-#            print('Banker Stands')
+            print('Banker Stands')
         if playerStands and bankerPoints < 6:
             bankerStands = False
     
@@ -103,44 +103,44 @@ def getDecision(aShoe, discards):
         if not playerStands and bankerPoints == 3:
             if playerThirdCardValue != 8:
                 bankerStands = False
-#                print('Banker with 3 draws when player 3rd card != 8')
+                print('Banker with 3 draws when player 3rd card != 8')
             else:
                 bankerStands = True
-#                print('Banker Stands')
+                print('Banker Stands')
         if not playerStands and bankerPoints == 4:
-            if playerThirdCardValue > 1 and playerThirdCardValue < 8:
+            if 1 < playerThirdCardValue < 8:
                 bankerStands = False
-#                print('Banker with 4 draws when player 3rd card is 2 - 7')
+                print('Banker with 4 draws when player 3rd card is 2 - 7')
             else:
                 bankerStands = True
-#                print('Banker Stands')
+                print('Banker Stands')
         if not playerStands and bankerPoints == 5:
-            if playerThirdCardValue > 3 and playerThirdCardValue < 8:
+            if 3 < playerThirdCardValue < 8:
                 bankerStands = False
-#                print('Banker with 5 draws when player 3rd card is 4 - 7')
+                print('Banker with 5 draws when player 3rd card is 4 - 7')
             else:
                 bankerStands = True
-#                print('Banker Stands')
+                print('Banker Stands')
         if not playerStands and bankerPoints == 6:
-            if playerThirdCardValue > 5 and playerThirdCardValue < 8:
+            if 5 < playerThirdCardValue < 8:
                 bankerStands = False
-#                print('Banker with 6 draws when player 3rd card is 6 or 7')
+                print('Banker with 6 draws when player 3rd card is 6 or 7')
             else:
                 bankerStands = True
-#                print('Banker Stands')
+                print('Banker Stands')
     
         if not bankerStands:
             aShoe.move_cards(bankerHand,  1)
-#            print('Banker draws the', bankerHand.cards[-1], end='')
+            print('Banker draws the', bankerHand.cards[-1], end='')
             bankerPoints += bankerHand.cards[-1].value
             if bankerPoints > 9:
                 bankerPoints -= 10
-#            print(' for a total of ', bankerPoints)
+            print(' for a total of ', bankerPoints)
 
     if len(aShoe.cards) < 6:
         print('That was the last hand in this shoe. Will reshuffle the shoe')
     if playerPoints == bankerPoints :
-#        print('The hand is a tie.')
+        print('The hand is a tie.')
         bankerHand.move_cards(discards, len(bankerHand.cards))
         playerHand.move_cards(discards, len(playerHand.cards))
         return 'T'
@@ -150,7 +150,7 @@ def getDecision(aShoe, discards):
             bankerHand.move_cards(discards, len(bankerHand.cards))
             playerHand.move_cards(discards, len(playerHand.cards))
             return 'p'
-#        print('Player wins')
+        print('Player wins')
         bankerHand.move_cards(discards, len(bankerHand.cards))
         playerHand.move_cards(discards, len(playerHand.cards))
         return 'P'
@@ -160,21 +160,29 @@ def getDecision(aShoe, discards):
             bankerHand.move_cards(discards, len(bankerHand.cards))
             playerHand.move_cards(discards, len(playerHand.cards))
             return 'D'
-#        print('Banker wins')
+        print('Banker wins')
         bankerHand.move_cards(discards, len(bankerHand.cards))
         playerHand.move_cards(discards, len(playerHand.cards))
         return 'B'
 
 if __name__ == '__main__':
     scorecard =[]
-    aShoe = Shoe()
-    discards = Shoe()
-    aShoe, discards = prepareShoe(aShoe, discards)
-    burn_top_cards(aShoe, discards)
-    while len(aShoe.cards) > 16:
-        scorecard.append(getDecision(aShoe, discards))
+#    aShoe = Shoe()
+#    discards = Shoe()
+    gameShoe, discards = prepareShoe()
+    burn_top_cards(gameShoe, discards)
+    file = open('data.out', 'a')
+    file.seek(0,2)
+    while len(gameShoe.cards) > 16:
+        decision = getDecision(gameShoe, discards)
+        scorecard.append(decision)
+        file.write(decision)
+    file.write('\n')
+    file.close()
+    
     print(scorecard)
     print(len(scorecard))
+
 #    len(aShoe.cards)
 #    len(discards.cards)
 
