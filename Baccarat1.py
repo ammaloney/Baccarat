@@ -7,6 +7,7 @@ Created on Sun Aug 23 11:30:55 2015
 """
 
 from CasinoCards import Hand, Shoe
+
 #import time
 
 scorecard = []
@@ -45,6 +46,7 @@ def getDecision(aShoe, discards):
         aShoe.cut_cards()
         assert len(discards.cards) == 0
         assert len(aShoe.cards) == 416
+        aShoe.burn_top_cards(aShoe, discards)
         
     natural = False
     bankerDraws = False
@@ -199,7 +201,9 @@ if __name__ == '__main__':
     file = open('data.out', 'a')
     file.seek(0,2)
     while len(gameShoe.cards) > 16:
+        print('player_bet(bet_on, bet_amount)')
         decision = getDecision(gameShoe, discards)
+        print('settle_bet(%s)' % decision)
         scorecard.append(decision)
         file.write(decision)
     file.write('\n')
