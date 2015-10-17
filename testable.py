@@ -21,3 +21,7 @@ def testable(x):
     if x < 9:
         return 3.0
     return x ** 0.5
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

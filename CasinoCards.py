@@ -17,7 +17,6 @@ Added the ability to cut the deck.
 
 import random
 
-
 class Card(object):
     """Represents a standard playing card.
     
