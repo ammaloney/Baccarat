@@ -7,6 +7,7 @@ Created on Sun Aug 23 11:30:55 2015
 """
 
 from CasinoCards import Hand, Shoe
+#import time
 
 scorecard = []
 
@@ -46,8 +47,8 @@ def getDecision(aShoe, discards):
         assert len(aShoe.cards) == 416
         
     natural = False
-    bankerStands = False
-    playerStands = False
+    bankerDraws = False
+    playerDraws = False
 
     aShoe.move_cards(playerHand, 1)
     playerPoints = playerHand.cards[0].value
@@ -64,83 +65,107 @@ def getDecision(aShoe, discards):
     if bankerPoints > 9:
         bankerPoints -= 10
 
-    print('Player has the', playerHand.cards[0], 'and the', 
-          playerHand.cards[1], 'for a total of', playerPoints )
-    print('Banker has the', bankerHand.cards[0], 'and the', 
-          bankerHand.cards[1], 'for a total of', bankerPoints )
-
+    #print('\nPlayer has the', playerHand.cards[0], 'and the', 
+#          playerHand.cards[1], 'for a total of', playerPoints )
+    #time.sleep(.5)
+    #print('Banker has the', bankerHand.cards[0], 'and the', 
+#          bankerHand.cards[1], 'for a total of', bankerPoints )
+    #time.sleep(.5)
+          
+#   Evaluate initial hands
     if playerPoints > 7 :
-        print('Player has a natural, there will be no more cards.')
+        #print('Player has a natural, there will be no more cards.')
         natural = True
+    #time.sleep(.5)
     if bankerPoints > 7 :
-        print('Banker has a natural, there will be no more cards.')
+        #print('Banker has a natural, there will be no more cards.')
         natural = True
+    #time.sleep(.5)        
+#   Determine if Player draws a third card
     if not natural:
         if playerPoints > 5:
-            print('Player stands with', playerPoints)
-            playerStands = True
+            #print('Player stands with', playerPoints)
+            #time.sleep(.5)
+            playerDraws = False
         else:
-            playerStands = False
+            playerDraws = True
             aShoe.move_cards(playerHand, 1)
-            print('Player gets the', playerHand.cards[-1], end='')
+            #print('Player gets the', playerHand.cards[-1], end='')
             playerPoints += playerHand.cards[-1].value
             if playerPoints > 9:
                 playerPoints -= 10
-            print(' for a total of ', playerPoints)
-        
+            #print(' for a total of ', playerPoints)
+            #time.sleep(.5)
+            
+#   Determine if Banker draws a third card
         if bankerPoints == 7:
-            bankerStands = True
-            print('Banker Stands')
-        if playerStands and (5 < bankerPoints < 7):
-            bankerStands = True
-            print('Banker Stands')
-        if playerStands and bankerPoints < 6:
-            bankerStands = False
-    
-        if not playerStands:
+            bankerDraws = False
+            #print('Banker Stands')
+            #time.sleep(.5)
+        if not playerDraws:
+            if bankerPoints == 6:
+                bankerDraws = False
+                #print('Banker Stands')
+                #time.sleep(.5)
+            if bankerPoints < 6:
+                bankerDraws = True
+
+        
+        if playerDraws:
             playerThirdCardValue = playerHand.cards[-1].value
+            if bankerPoints < 3:
+                bankerDraws = True
+                #print('Banker always draws when holding less than 3')
+            if bankerPoints == 3:
+                if playerThirdCardValue != 8:
+                    bankerDraws = True
+                    #print('Banker with 3 draws when player 3rd card != 8')
+                    #time.sleep(.5)
+                else:
+                    bankerDraws = False
+                    #print('Banker Stands')
+                    #time.sleep(.5)
+            if bankerPoints == 4:
+                if 1 < playerThirdCardValue < 8:
+                    bankerDraws = True
+                    #print('Banker with 4 draws when player 3rd card is 2 - 7')
+#                    time.sleep(.5)
+                else:
+                    bankerDraws = False
+                    #print('Banker Stands')
+                    #time.sleep(.5)
+            if bankerPoints == 5:
+                if 3 < playerThirdCardValue < 8:
+                    bankerDraws = True
+                    #print('Banker with 5 draws when player 3rd card is 4 - 7')
+                    #time.sleep(.5)
+                else:
+                    bankerDraws = False
+                    #print('Banker Stands')
+                    #time.sleep(.5)
+            if bankerPoints == 6:
+                if 5 < playerThirdCardValue < 8:
+                    bankerDraws = True
+                    #print('Banker with 6 draws when player 3rd card is 6 or 7')
+                    #time.sleep(.5)
+                else:
+                    bankerDraws = False
+                    #print('Banker Stands')
+                    #time.sleep(.5)
     
-        if not playerStands and bankerPoints == 3:
-            if playerThirdCardValue != 8:
-                bankerStands = False
-                print('Banker with 3 draws when player 3rd card != 8')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-        if not playerStands and bankerPoints == 4:
-            if 1 < playerThirdCardValue < 8:
-                bankerStands = False
-                print('Banker with 4 draws when player 3rd card is 2 - 7')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-        if not playerStands and bankerPoints == 5:
-            if 3 < playerThirdCardValue < 8:
-                bankerStands = False
-                print('Banker with 5 draws when player 3rd card is 4 - 7')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-        if not playerStands and bankerPoints == 6:
-            if 5 < playerThirdCardValue < 8:
-                bankerStands = False
-                print('Banker with 6 draws when player 3rd card is 6 or 7')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-    
-        if not bankerStands:
+        if bankerDraws:
             aShoe.move_cards(bankerHand,  1)
-            print('Banker draws the', bankerHand.cards[-1], end='')
+            #print('Banker draws the', bankerHand.cards[-1], end='')
             bankerPoints += bankerHand.cards[-1].value
             if bankerPoints > 9:
                 bankerPoints -= 10
-            print(' for a total of ', bankerPoints)
+            #print(' for a total of ', bankerPoints)
+            #time.sleep(.5)
 
     if len(aShoe.cards) < 6:
         print('That was the last hand in this shoe. Will reshuffle the shoe')
     if playerPoints == bankerPoints :
-        print('The hand is a tie.')
+        #print('The hand is a tie.')
         bankerHand.move_cards(discards, len(bankerHand.cards))
         playerHand.move_cards(discards, len(playerHand.cards))
         return 'T'
@@ -150,7 +175,7 @@ def getDecision(aShoe, discards):
             bankerHand.move_cards(discards, len(bankerHand.cards))
             playerHand.move_cards(discards, len(playerHand.cards))
             return 'p'
-        print('Player wins')
+        #print('Player wins')
         bankerHand.move_cards(discards, len(bankerHand.cards))
         playerHand.move_cards(discards, len(playerHand.cards))
         return 'P'
@@ -160,7 +185,7 @@ def getDecision(aShoe, discards):
             bankerHand.move_cards(discards, len(bankerHand.cards))
             playerHand.move_cards(discards, len(playerHand.cards))
             return 'D'
-        print('Banker wins')
+        #print('Banker wins')
         bankerHand.move_cards(discards, len(bankerHand.cards))
         playerHand.move_cards(discards, len(playerHand.cards))
         return 'B'
