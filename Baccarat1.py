@@ -32,7 +32,6 @@ def percentChange(startPoint, currentPoint):
         return((currentPoint - startPoint) / abs(startPoint)) * 100.00
     except:
         return 0
-        
 
 if __name__ == '__main__':
     
@@ -139,7 +138,7 @@ if __name__ == '__main__':
     print('\n', scorecard)
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
-            'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
+          'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
     print(stakeHistory)
     plt.plot(stakeHistory, label='Stake')
     plt.plot(walkHistory, 'g', label='BvP')
