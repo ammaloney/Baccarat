@@ -6,14 +6,21 @@ Created on Sun Aug 23 11:30:55 2015
 @author: amaloney
 """
 
-from CasinoCards import Shoe
 
+import pickle
+from CasinoCards import Shoe
 from getDecision import getDecision
 
 scorecard = []
 
 def prepareShoe():
-    aShoe = Shoe()
+    try:
+        with open('baccarat_shoe.dat', 'rb') as shoe_file:
+            aShoe = pickle.load(shoe_file)
+    except:
+        print('No shoe file found; creating new shoe.')
+        aShoe = Shoe()
+
     aShoe.shuffle()
     aShoe.cut_cards()
     discards = Shoe()
@@ -33,6 +40,15 @@ def percentChange(startPoint, currentPoint):
     except:
         return 0
 
+def save_shoe(aShoe, discards):
+    try:
+        with open('baccarat_shoe.dat', 'wb') as shoe_file:
+            if len(discards.cards) > 0:
+                discards.move_cards(aShoe, len(discards.cards))
+            pickle.dump(aShoe, shoe_file)
+    except IOError as err:
+        print('File error: ' + str(err))
+    
 if __name__ == '__main__':
     
     from Player import Bet, Player
@@ -134,6 +150,7 @@ if __name__ == '__main__':
         file.write(decision)
     file.write('\n')
     file.close()
+    save_shoe(gameShoe, discards)
     
     print('\n', scorecard)
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),

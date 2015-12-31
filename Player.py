@@ -21,12 +21,12 @@ class Bet():
     def winAmount(self):
         return (self.amount * self.outcome.odds) + self.amount
 
-    def loseAmount(self):
+    def pushAmount(self):
         return self.amount
 
 class Player():
 #    def __init__(self, aName, initial_stake=200):
-    def __init__(self, aName):
+    def __init__(self, aName='Joe'):
         
 #        self.stake = initial_stake
         self.stake_history = []
@@ -34,11 +34,19 @@ class Player():
         self.name = aName
         self.stake = 0
     
-    def place_bet(self, anAmount=0, anOutcome='bankerBet'):
+    def place_bet(self, anAmount=1, anOutcome='bankerBet'):
         self.nextBet = Bet(anAmount, anOutcome)
         self.stake -= int(anAmount)
         return self.nextBet
 
-    def settle_bet(self, aBet, aDecision):
-        pass
+    def win(self, aBet):
+        self.stake += aBet.winAmount
+        self.stake_history.append(self.stake)
+        
+    def lose(self, aBet):
+        self.stake_history.append(self.stake)
+    
+    def push(self, aBet):
+        self.stake += aBet.amount
+        self.stake_history.append(self.stake)
     

@@ -43,13 +43,35 @@ class Outcome():
     
     def winAmount(self, amount):
         return self.odds * amount
-        
+
+class Bet():
+    """Bet contains an Outcome and an amount bet that the outcome will occur.
+    
+    """
+    def __init__(self, anAmount, anOutcome):
+        self.amount = anAmount
+        self.outcome = anOutcome
+
+    def __str__(self):
+        return "{} on {}".format(self.amount, self.outcome.name)
+
+    def winAmount(self):
+        return (self.amount * self.outcome.odds) + self.amount
+
+    def pushAmount(self):
+        return self.amount
+
+
 class Table():
-    pass
+    '''
+    '''
+    def __init__(self):
+        self.bets = []
+
 
 
 
 if __name__ == "__main__":
-    import doctest
-    
-    doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
+#    import doctest
+#    doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
+    pass
