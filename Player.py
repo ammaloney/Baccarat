@@ -16,7 +16,7 @@ class Bet():
         self.outcome = anOutcome
 
     def __str__(self):
-        return "{} on {}".format(self.amount, self.outcome.name)
+        return "{0} on {1}".format(self.amount, self.outcome.name)
 
     def winAmount(self):
         return (self.amount * self.outcome.odds) + self.amount
@@ -25,22 +25,28 @@ class Bet():
         return self.amount
 
 class Player():
-#    def __init__(self, aName, initial_stake=200):
     def __init__(self, aName='Joe'):
         
-#        self.stake = initial_stake
         self.stake_history = []
-#        self.wlp_history = []
         self.name = aName
         self.stake = 0
+        print('Created player {}'.format(self.name))
+
+    def __str__(self):
+        ''' Returns a string
+        '''
+        return '{0}, current stake: {1}\nStake history {2}'.format(self.name,
+            self.stake, self.stake_history)
+        
     
     def place_bet(self, anAmount=1, anOutcome='bankerBet'):
         self.nextBet = Bet(anAmount, anOutcome)
-        self.stake -= int(anAmount)
+        print('{0} bets {1}'.format(self.name, self.nextBet))
+        self.stake -= anAmount
         return self.nextBet
 
     def win(self, aBet):
-        self.stake += aBet.winAmount
+        self.stake += aBet.winAmount()
         self.stake_history.append(self.stake)
         
     def lose(self, aBet):

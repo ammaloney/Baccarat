@@ -79,11 +79,9 @@ if __name__ == '__main__':
     player_bettor = Player('player_bettor')
     
     while len(gameShoe.cards) > 16:
-        
-
 #        Place bet
-        banker_bettor.place_bet(2, 'B')
-        player_bettor.place_bet(2, 'P')
+        banker_bettor.place_bet(2, bankerBet)
+        player_bettor.place_bet(2, playerBet)
 
         currentBet = nextBet
 #        print('\nYou bet {}'.format(currentBet))

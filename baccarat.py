@@ -27,7 +27,7 @@ class Outcome():
     
     def __init__(self, name, odds):
         self.name = name
-        self.odds = odds
+        self.odds = int(odds)
         
     def __eq__(self, other):
         if self.name == other.name:
