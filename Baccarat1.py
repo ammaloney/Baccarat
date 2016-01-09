@@ -6,163 +6,162 @@ Created on Sun Aug 23 11:30:55 2015
 @author: amaloney
 """
 
-from CasinoCards import Hand, Shoe
 
-def prepareShoe(aShoe, discards):
-    aShoe = Shoe()
-    discards = Shoe()
+import pickle
+from CasinoCards import Shoe
+from getDecision import getDecision
+
+scorecard = []
+
+def prepareShoe():
+    try:
+        with open('baccarat_shoe.dat', 'rb') as shoe_file:
+            aShoe = pickle.load(shoe_file)
+    except:
+        print('No shoe file found; creating new shoe.')
+        aShoe = Shoe()
+
     aShoe.shuffle()
     aShoe.cut_cards()
+    discards = Shoe()
     discards.cards = []
     return aShoe, discards
     
-
-def getDecision(aShoe, discards):
-    """
-    Deal a hand of two cards to Player and Banker
+def burn_top_cards(aShoe, discards):
+    print(aShoe.cards[-1])
+    if aShoe.cards[-1].value == 0:
+        aShoe.move_cards(discards, 11)
+    else:
+        aShoe.move_cards(discards, aShoe.cards[-1].rank + 1)
     
-    If there is no decision after the initial cards are dealt,
-    deal one or two more cards according to the rules of the game.
+def percentChange(startPoint, currentPoint):
+    try:
+        return((currentPoint - startPoint) / abs(startPoint)) * 100.00
+    except:
+        return 0
+
+def save_shoe(aShoe, discards):
+    try:
+        with open('baccarat_shoe.dat', 'wb') as shoe_file:
+            if len(discards.cards) > 0:
+                discards.move_cards(aShoe, len(discards.cards))
+            pickle.dump(aShoe, shoe_file)
+    except IOError as err:
+        print('File error: ' + str(err))
     
-    Return the decision (P, B, T, D or p)
-    """
-    bankerHand = Hand()
-    playerHand = Hand()
-
-    if len(aShoe.cards) < 6:
-        discards.move_cards(aShoe, len(discards.cards))
-        aShoe.shuffle()
-        aShoe.cut_cards()
-        assert len(discards.cards) == 0
-        assert len(aShoe.cards) == 416
-
-    natural = False
-    bankerStands = False
-    playerStands = False
-
-    aShoe.move_cards(playerHand, 1)
-    playerPoints = playerHand.cards[0].value
-    aShoe.move_cards(bankerHand, 1)
-    bankerPoints = bankerHand.cards[0].value
-    aShoe.move_cards(playerHand, 1)
-
-    playerPoints += playerHand.cards[1].value
-    if playerPoints > 9:
-        playerPoints -= 10
-
-    aShoe.move_cards(bankerHand, 1)
-    bankerPoints += bankerHand.cards[1].value
-    if bankerPoints > 9:
-        bankerPoints -= 10
-
-    print('Player has the', playerHand.cards[0], 'and the', 
-          playerHand.cards[1], 'for a total of', playerPoints )
-    print('Banker has the', bankerHand.cards[0], 'and the', 
-          bankerHand.cards[1], 'for a total of', bankerPoints )
-
-    if playerPoints > 7 :
-        print('Player has a natural, there will be no more cards.')
-        natural = True
-    if bankerPoints > 7 :
-        print('Banker has a natural, there will be no more cards.')
-        natural = True
-    if not natural:
-        if playerPoints > 5:
-            print('Player stands with', playerPoints)
-            playerStands = True
-        else:
-            playerStands = False
-            aShoe.move_cards(playerHand, 1)
-            print('Player gets the', playerHand.cards[-1], end='')
-            playerPoints += playerHand.cards[-1].value
-            if playerPoints > 9:
-                playerPoints -= 10
-            print(' for a total of ', playerPoints)
-        
-        if bankerPoints == 7:
-            bankerStands = True
-            print('Banker Stands')
-        if playerStands and (bankerPoints > 5 and bankerPoints < 7):
-            bankerStands = True
-            print('Banker Stands')
-        if playerStands and bankerPoints < 6:
-            bankerStands = False
-    
-        if not playerStands:
-            playerThirdCardValue = playerHand.cards[-1].value
-    
-        if not playerStands and bankerPoints == 3:
-            if playerThirdCardValue != 8:
-                bankerStands = False
-                print('Banker with 3 draws when player 3rd card != 8')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-        if not playerStands and bankerPoints == 4:
-            if playerThirdCardValue > 1 and playerThirdCardValue < 8:
-                bankerStands = False
-                print('Banker with 4 draws when player 3rd card is 2 - 7')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-        if not playerStands and bankerPoints == 5:
-            if playerThirdCardValue > 3 and playerThirdCardValue < 8:
-                bankerStands = False
-                print('Banker with 5 draws when player 3rd card is 4 - 7')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-        if not playerStands and bankerPoints == 6:
-            if playerThirdCardValue > 5 and playerThirdCardValue < 8:
-                bankerStands = False
-                print('Banker with 6 draws when player 3rd card is 6 or 7')
-            else:
-                bankerStands = True
-                print('Banker Stands')
-    
-        if not bankerStands:
-            aShoe.move_cards(bankerHand,  1)
-            print('Banker draws the', bankerHand.cards[-1], end='')
-            bankerPoints += bankerHand.cards[-1].value
-            if bankerPoints > 9:
-                bankerPoints -= 10
-            print(' for a total of ', bankerPoints)
-
-    if len(aShoe.cards) < 6:
-        print('That was the last hand in this shoe. Will reshuffle the shoe')
-    if playerPoints == bankerPoints :
-        print('The hand is a tie.')
-        bankerHand.move_cards(discards, len(bankerHand.cards))
-        playerHand.move_cards(discards, len(playerHand.cards))
-        return 'T'
-    if playerPoints > bankerPoints :
-        if len(playerHand.cards) == 3 and playerPoints == 8:
-            print('Panda')
-            bankerHand.move_cards(discards, len(bankerHand.cards))
-            playerHand.move_cards(discards, len(playerHand.cards))
-            return 'p'
-        print('Player wins')
-        bankerHand.move_cards(discards, len(bankerHand.cards))
-        playerHand.move_cards(discards, len(playerHand.cards))
-        return 'P'
-    if bankerPoints > playerPoints:
-        if len(bankerHand.cards) == 3 and bankerPoints == 7:
-            print('Dragon')
-            bankerHand.move_cards(discards, len(bankerHand.cards))
-            playerHand.move_cards(discards, len(playerHand.cards))
-            return 'D'
-        print('Banker wins')
-        bankerHand.move_cards(discards, len(bankerHand.cards))
-        playerHand.move_cards(discards, len(playerHand.cards))
-        return 'B'
-
 if __name__ == '__main__':
-    aShoe = Shoe()
-    discards = Shoe()
-    aShoe, discards = prepareShoe(aShoe, discards)
-    getDecision(aShoe, discards)
-    len(aShoe.cards)
-    len(discards.cards)
+    
+    from Player import Bet, Player
+    from baccarat import Outcome
+    import matplotlib.pyplot as plt
+    
+    bankerBet = Outcome('B', 1)
+    dragonBet = Outcome('D', 40)
+    playerBet = Outcome('P', 1)
+    pandaBet = Outcome('p', 25)
+    tieBet = Outcome('T', 9)
+    
+    stake = 0
+    walk = 0
+    stakeHistory = []
+    scorecard =[]
+    temp = []
+    walkHistory = []
+    side = 'P'
+    nextBet = Bet(2, bankerBet)
+    currentBet = nextBet
+    
+    gameShoe, discards = prepareShoe()
+    burn_top_cards(gameShoe, discards)
+    file = open('data.out', 'a')
+    file.seek(0,2)
+    banker_bettor = Player('banker_bettor')
+    player_bettor = Player('player_bettor')
+    
+    while len(gameShoe.cards) > 16:
+#        Place bet
+        banker_bettor.place_bet(2, bankerBet)
+        player_bettor.place_bet(2, playerBet)
+
+        currentBet = nextBet
+#        print('\nYou bet {}'.format(currentBet))
+        
+#        Get decision
+        decision = getDecision(gameShoe, discards)
+        
+#        settle bets
+        if decision != 'T':
+            if decision == 'D':
+                temp.append('B')
+#                print('Dragon', end = ' ')
+                if currentBet.outcome.name == decision:
+#                    print('You win {}'.format(
+#                        currentBet.amount * currentBet.outcome.odds))
+                    stake += currentBet.amount * currentBet.outcome.odds
+#                elif currentBet.outcome.name == 'B':
+#                    print('Banker bets push')
+            elif decision == 'B':
+                temp.append('B')
+                walk += 1
+#                print('Banker Wins', end = ' ')
+                if currentBet.outcome.name == decision:
+#                    print('You win {}'.format(currentBet.amount))
+                    stake += currentBet.amount
+                    nextBet.amount += 1
+                else:
+                    stake -= currentBet.amount
+                    nextBet.amount = 2
+            elif decision == 'p':
+                temp.append('P')
+                walk -= 1
+#                print('Panda', end = ' ')
+                if currentBet.outcome.name == decision:
+#                    print('You win {}'.format(
+#                        currentBet.amount * currentBet.outcome.odds))
+                    stake += currentBet.amount * currentBet.outcome.odds
+                    nextBet.amount += 1
+                elif currentBet.outcome.name == 'P':
+#                    print('Panda - pay Player and Panda bets')
+                    stake += currentBet.amount
+                    nextBet.amount += 1
+                else:
+                    stake -= currentBet.amount
+                    nextBet.amount = 2
+            elif decision == 'P':
+                temp.append('P')
+                walk -= 1
+#                print('Player Wins', end = ' ')
+                if currentBet.outcome.name == decision:
+#                    print('You win {}'.format(currentBet.amount))
+                    stake += currentBet.amount
+                    nextBet.amount += 1
+                else:
+                    stake -= currentBet.amount
+                    nextBet.amount = 2
+        else:
+            pass
+#            print('The hand is a tie')
+
+        stakeHistory.append(stake)
+        walkHistory.append(walk)
+        scorecard.append(decision)
+        file.write(decision)
+    file.write('\n')
+    file.close()
+    save_shoe(gameShoe, discards)
+    
+    print('\n', scorecard)
+    print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
+          'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
+          'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
+    print(stakeHistory)
+    plt.plot(stakeHistory, label='Stake')
+    plt.plot(walkHistory, 'g', label='BvP')
+#    plt.legend()
+    plt.show()
+
+#    len(aShoe.cards)
+#    len(discards.cards)
 
 
     

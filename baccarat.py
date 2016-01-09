@@ -1,30 +1,77 @@
 # -*- coding: utf-8 -*-
 """
-baccarat.py
+Contains the following classes for Baccarat simulation:
 
-Created on Thu Jul 30 2015
+Outcome, Table, Game, Bet
 
 @author: amaloney
 """
 
-banker = 0
-ties = 0
-player = 0
-input_file = open('bacShoes1-5.txt')
-for line in input_file:
-    shoe = line.strip().split(',')
-#    print(shoe)
-    print('Shoe #', shoe.pop(0),'had ', end = '')
-    print(len(shoe), 'hands.')
-    for result in shoe:
-        if result == 'T':
-            ties += 1
-        elif result == 'B':
-            banker += 1
-        else:
-            player += 1
-    print("P ", player, " B ", banker, " T ", ties)
-    banker = player = ties = 0
-
-input_file.close()
     
+class Outcome():
+    """ Outcome contains a single outcome on which a bet can be placed.
+    An Outcome will contain the name of the outcome as a String, and the 
+    odds that are paid as an integer.
+    
+    >>> oc1 = Outcome( "Tie", 9 )
+    >>> oc2 = Outcome( "Tie", 9 )
+    >>> oc3 = Outcome( "dummy", 3)
+    >>> oc1 == oc2
+    True
+    >>> oc1.winAmount(3)
+    24
+    >>> oc1 == oc3
+    False
+    
+    """
+    
+    def __init__(self, name, odds):
+        self.name = name
+        self.odds = int(odds)
+        
+    def __eq__(self, other):
+        if self.name == other.name:
+            return True
+        else:
+            return False
+        
+    def __str__(self):
+        return "{} ({:d}:1)".format(self.name, self.odds)
+        
+    def __hash__(self):
+        return hash(self.name)
+    
+    def winAmount(self, amount):
+        return self.odds * amount
+
+class Bet():
+    """Bet contains an Outcome and an amount bet that the outcome will occur.
+    
+    """
+    def __init__(self, anAmount, anOutcome):
+        self.amount = anAmount
+        self.outcome = anOutcome
+
+    def __str__(self):
+        return "{} on {}".format(self.amount, self.outcome.name)
+
+    def winAmount(self):
+        return (self.amount * self.outcome.odds) + self.amount
+
+    def pushAmount(self):
+        return self.amount
+
+
+class Table():
+    '''
+    '''
+    def __init__(self):
+        self.bets = []
+
+
+
+
+if __name__ == "__main__":
+#    import doctest
+#    doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
+    pass
