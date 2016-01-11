@@ -10,6 +10,9 @@ Created on Sun Aug 23 11:30:55 2015
 import pickle
 from CasinoCards import Shoe
 from getDecision import getDecision
+from Player import Player
+from baccarat import Outcome, Bet
+import matplotlib.pyplot as plt
 
 scorecard = []
 
@@ -51,9 +54,6 @@ def save_shoe(aShoe, discards):
     
 if __name__ == '__main__':
     
-    from Player import Bet, Player
-    from baccarat import Outcome
-    import matplotlib.pyplot as plt
     
     bankerBet = Outcome('B', 1)
     dragonBet = Outcome('D', 40)
@@ -76,12 +76,14 @@ if __name__ == '__main__':
     file = open('data.out', 'a')
     file.seek(0,2)
     banker_bettor = Player('banker_bettor')
+    bet2onBank = Bet(2, bankerBet)
     player_bettor = Player('player_bettor')
+    bet2onPlayer = Bet(2, playerBet)
     
     while len(gameShoe.cards) > 16:
 #        Place bet
-        banker_bettor.place_bet(2, bankerBet)
-        player_bettor.place_bet(2, playerBet)
+        banker_bettor.nextBet = bet2onBank
+        player_bettor.nextBet = bet2onPlayer
 
         currentBet = nextBet
 #        print('\nYou bet {}'.format(currentBet))
@@ -93,6 +95,8 @@ if __name__ == '__main__':
         if decision != 'T':
             if decision == 'D':
                 temp.append('B')
+                banker_bettor.push(bet2onBank)
+                player_bettor.lose(bet2onPlayer)
 #                print('Dragon', end = ' ')
                 if currentBet.outcome.name == decision:
 #                    print('You win {}'.format(
@@ -102,6 +106,8 @@ if __name__ == '__main__':
 #                    print('Banker bets push')
             elif decision == 'B':
                 temp.append('B')
+                banker_bettor.win(bet2onBank)
+                player_bettor.lose(bet2onPlayer)
                 walk += 1
 #                print('Banker Wins', end = ' ')
                 if currentBet.outcome.name == decision:
@@ -114,6 +120,8 @@ if __name__ == '__main__':
             elif decision == 'p':
                 temp.append('P')
                 walk -= 1
+                banker_bettor.lose(bet2onBank)
+                player_bettor.win(bet2onPlayer)
 #                print('Panda', end = ' ')
                 if currentBet.outcome.name == decision:
 #                    print('You win {}'.format(
@@ -129,6 +137,8 @@ if __name__ == '__main__':
                     nextBet.amount = 2
             elif decision == 'P':
                 temp.append('P')
+                banker_bettor.lose(bet2onBank)
+                player_bettor.win(bet2onPlayer)
                 walk -= 1
 #                print('Player Wins', end = ' ')
                 if currentBet.outcome.name == decision:
@@ -139,7 +149,8 @@ if __name__ == '__main__':
                     stake -= currentBet.amount
                     nextBet.amount = 2
         else:
-            pass
+            banker_bettor.push(bet2onBank)
+            player_bettor.push(bet2onPlayer)
 #            print('The hand is a tie')
 
         stakeHistory.append(stake)
@@ -155,8 +166,12 @@ if __name__ == '__main__':
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
     print(stakeHistory)
+    print(banker_bettor)
+    print(player_bettor)
     plt.plot(stakeHistory, label='Stake')
     plt.plot(walkHistory, 'g', label='BvP')
+    plt.plot(player_bettor.stake_history, label='Player')
+    plt.plot(banker_bettor.stake_history, label='Banker')
 #    plt.legend()
     plt.show()
 
