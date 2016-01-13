@@ -9,7 +9,7 @@ Copyright 2015 Allen Downey
 
 License: http://creativecommons.org/licenses/by/4.0/
 
-Added the ability to cut the deck.
+Added the ability to cut the deck and added a 'value' attribute.
 
 """
 
@@ -80,6 +80,10 @@ class Deck(object):
         for card in self.cards:
             res.append(str(card))
         return '\n'.join(res)
+    
+    def __iter__(self):
+        return iter(self.cards)
+        
 
     def add_card(self, card):
         """Adds a card to the deck.

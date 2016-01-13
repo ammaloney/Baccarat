@@ -64,13 +64,20 @@ class Bet():
 
 
 class Table():
-    '''
+    '''The table will hold the bets until resolution
     '''
     def __init__(self):
         self.bets = []
 
 
-if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod(verbose=False, optionflags=doctest.ELLIPSIS)
+class Game:
+    '''Base class for casino game simulations.
+    Game objects cycle through the game procedures.
+    For casino games this is generally:
+        1 - instantiate objects - player, shoe, table, so on 
+        2 - get bets
+        3 - get the (random) event that was bet on
+        4 - resolve bets
+    '''
     pass
+

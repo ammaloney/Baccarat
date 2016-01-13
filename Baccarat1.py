@@ -43,6 +43,14 @@ def percentChange(startPoint, currentPoint):
     except:
         return 0
 
+def fibonacci(n):
+    if n == 0:
+        return 0
+    elif n==1:
+        return 1
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
 def save_shoe(aShoe, discards):
     try:
         with open('baccarat_shoe.dat', 'wb') as shoe_file:
@@ -76,15 +84,20 @@ if __name__ == '__main__':
     file = open('data.out', 'a')
     file.seek(0,2)
     banker_bettor = Player('banker_bettor')
-    bet2onBank = Bet(2, bankerBet)
+    bet2onBanker = Bet(2, bankerBet)
     player_bettor = Player('player_bettor')
     bet2onPlayer = Bet(2, playerBet)
     
     while len(gameShoe.cards) > 16:
 #        Place bet
-        banker_bettor.nextBet = bet2onBank
+        banker_bettor.nextBet = bet2onBanker
         player_bettor.nextBet = bet2onPlayer
-
+        
+        if len(temp) < 3:
+            nextBet.outcome.name = 'B'
+        else:
+            nextBet.outcome.name = temp[-2]
+        
         currentBet = nextBet
 #        print('\nYou bet {}'.format(currentBet))
         
@@ -95,7 +108,7 @@ if __name__ == '__main__':
         if decision != 'T':
             if decision == 'D':
                 temp.append('B')
-                banker_bettor.push(bet2onBank)
+                banker_bettor.push(bet2onBanker)
                 player_bettor.lose(bet2onPlayer)
 #                print('Dragon', end = ' ')
                 if currentBet.outcome.name == decision:
@@ -106,7 +119,7 @@ if __name__ == '__main__':
 #                    print('Banker bets push')
             elif decision == 'B':
                 temp.append('B')
-                banker_bettor.win(bet2onBank)
+                banker_bettor.win(bet2onBanker)
                 player_bettor.lose(bet2onPlayer)
                 walk += 1
 #                print('Banker Wins', end = ' ')
@@ -120,7 +133,7 @@ if __name__ == '__main__':
             elif decision == 'p':
                 temp.append('P')
                 walk -= 1
-                banker_bettor.lose(bet2onBank)
+                banker_bettor.lose(bet2onBanker)
                 player_bettor.win(bet2onPlayer)
 #                print('Panda', end = ' ')
                 if currentBet.outcome.name == decision:
@@ -137,7 +150,7 @@ if __name__ == '__main__':
                     nextBet.amount = 2
             elif decision == 'P':
                 temp.append('P')
-                banker_bettor.lose(bet2onBank)
+                banker_bettor.lose(bet2onBanker)
                 player_bettor.win(bet2onPlayer)
                 walk -= 1
 #                print('Player Wins', end = ' ')
@@ -149,7 +162,7 @@ if __name__ == '__main__':
                     stake -= currentBet.amount
                     nextBet.amount = 2
         else:
-            banker_bettor.push(bet2onBank)
+            banker_bettor.push(bet2onBanker)
             player_bettor.push(bet2onPlayer)
 #            print('The hand is a tie')
 
@@ -165,13 +178,13 @@ if __name__ == '__main__':
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
-    print(stakeHistory)
-    print(banker_bettor)
-    print(player_bettor)
-    plt.plot(stakeHistory, label='Stake')
+    print('repeat ', stake)
+    print('banker_bettor ', banker_bettor.stake)
+    print('player_bettor ', player_bettor.stake)
+    plt.plot(stakeHistory, 'magenta', label='Stake')
     plt.plot(walkHistory, 'g', label='BvP')
-    plt.plot(player_bettor.stake_history, label='Player')
-    plt.plot(banker_bettor.stake_history, label='Banker')
+    plt.plot(player_bettor.stake_history, 'dodgerblue', label='Player')
+    plt.plot(banker_bettor.stake_history, 'r', label='Banker')
 #    plt.legend()
     plt.show()
 
