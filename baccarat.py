@@ -6,6 +6,12 @@ Outcome, Table, Game, Bet
 
 @author: amaloney
 """
+import pickle
+import matplotlib
+import matplotlib.pyplot as plt
+from CasinoCards import Shoe
+from getDecision import getDecision
+
 
 
 class Outcome():
@@ -80,4 +86,8 @@ class Game:
         4 - resolve bets
     '''
     pass
+#    gameShoe, discards = prepareShoe()
+#    burn_top_cards(gameShoe, discards)
+#    file = open('data.out', 'a')
+#    file.seek(0,2)
 
