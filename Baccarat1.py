@@ -11,6 +11,7 @@ import pickle
 from CasinoCards import Shoe
 from getDecision import getDecision
 from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor
+from Player import Walk3of5Bettor
 from baccarat import Outcome, Bet
 import matplotlib.pyplot as plt
 
@@ -84,28 +85,18 @@ if __name__ == '__main__':
     bfb = BankerFlatBettor() 
     pfb = PlayerFlatBettor()
     b3b = Banker3of5Bettor()
-    players = [bfb, pfb, b3b]
+    w3b = Walk3of5Bettor()
+    players = [bfb, pfb, b3b, w3b]
     
     while len(gameShoe.cards) > 16:
-#        Place bet
-#        banker_bettor.nextBet = bet2onBanker
-#        print('\nPlace your bets.\n')
+# Place bet
         for player in players:
             player.place_bet()
-        
-#        if len(temp) < 3:
-#            nextBet.outcome.name = 'B'
-#        else:
-#            nextBet.outcome.name = temp[-2]
-#        
-#        currentBet = nextBet
-##        print('\nYou bet {}'.format(currentBet))
-        
-#        Get decision
+
+# Get decision
         decision = getDecision(gameShoe, discards)
-#        print('\n** {} **\n'.format(bets[decision]))
         
-#        settle bets
+# Settle bets
         for player in players:
             if player.nextBet.outcome.name == decision:
                 player.win(player.nextBet)
@@ -138,11 +129,14 @@ if __name__ == '__main__':
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
     for player in players:
-        print(player.name, player.stake, max(player.stake_history))
+        print(player.name, player.stake, 
+              max(player.stake_history), min(player.stake_history))
     plt.plot(walkHistory, 'g', label='BvP')
     plt.plot(pfb.stake_history, 'dodgerblue', label='Player')
     plt.plot(bfb.stake_history, 'r', label='Banker')
     plt.plot(b3b.stake_history, 'magenta', label='B3B')
+    plt.plot(w3b.stake_history, 'y', label='W3B')
+
 #    plt.legend()
     plt.show()
 
