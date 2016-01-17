@@ -30,6 +30,7 @@ class Player():
         self.wl_list = []
         self.status = None
         self.verbose = False
+        self.nextBet = Bet(0, self.bankerBet)
         if self.verbose: 
             print('Created player {}'.format(self.name))
 
@@ -66,6 +67,7 @@ class Player():
         if self.verbose: 
             print('{} Pushes {}'.format(self.name, aBet.amount))
         self.stake_history.append(self.stake)
+        self.status = 'T'
 
 
 class BankerFlatBettor(Player):
@@ -92,6 +94,44 @@ class PlayerFlatBettor(Player):
 
     def place_bet(self):
         self.nextBet = Bet(2, self.playerBet)
+        if self.verbose : 
+            print('{0} bets {1}'.format(self.name, self.nextBet))
+        self.stake -= self.nextBet.amount
+        return self.nextBet
+
+
+class BankerWinUp1Bettor(BankerFlatBettor):
+    def __init__(self):
+        super().__init__()
+        self.name = 'Banker Up 1'
+        if self.verbose: 
+            print('Created player {}'.format(self.name))
+
+    def place_bet(self):
+        if self.status == 'W':
+            self.nextBet = Bet((self.nextBet.amount + 1), self.bankerBet)
+        elif self.status == 'L':
+            self.nextBet = Bet(2, self.bankerBet)
+
+        if self.verbose : 
+            print('{0} bets {1}'.format(self.name, self.nextBet))
+        self.stake -= self.nextBet.amount
+        return self.nextBet
+
+
+class PlayerWinUp1Bettor(PlayerFlatBettor):
+    def __init__(self):
+        super().__init__()
+        self.name = 'Player Up 1'
+        if self.verbose: 
+            print('Created player {}'.format(self.name))
+
+    def place_bet(self):
+        if self.status == 'W':
+            self.nextBet = Bet((self.nextBet.amount + 1), self.playerBet)
+        elif self.status == 'L':
+            self.nextBet = Bet(2, self.playerBet)
+
         if self.verbose : 
             print('{0} bets {1}'.format(self.name, self.nextBet))
         self.stake -= self.nextBet.amount
@@ -143,7 +183,7 @@ class Banker3of5Bettor(Player):
 class Walk3of5Bettor(Player):
     def __init__(self):
         super().__init__()
-        self.name = 'Walk 3of5'
+        self.name = 'Walk 3 of 5'
         if self.verbose : 
             print('Created player {}'.format(self.name))
         self.series_wins = 0
@@ -170,14 +210,12 @@ class Walk3of5Bettor(Player):
         self.series_wins += 1
         self.series_length += 1
         if self.series_wins > 1:
-#            print('W3B: Win Series')
             self.series_wins = 0
             self.series_length = 0
 
         if self.series_length > 4:
             self.series_length = 0
             self.series_wins = 0
-#            print('W3B: Lose series with one win')
 
         if aBet.outcome.name == 'B' or aBet.outcome.name == 'D':
             self.walk += 1
@@ -193,7 +231,6 @@ class Walk3of5Bettor(Player):
         if self.series_length > 4: 
             self.series_length = 0
             self.series_wins = 0
-#            print('W3B: Lost Series')
         if aBet.outcome.name == 'B' or aBet.outcome.name == 'D':
             self.walk -= 1
         if aBet.outcome.name == 'P' or aBet.outcome.name == 'p':

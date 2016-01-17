@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Baccarat1.py 
@@ -10,7 +11,8 @@ Created on Sun Aug 23 11:30:55 2015
 import pickle
 from CasinoCards import Shoe
 from getDecision import getDecision
-from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor
+from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor, \
+                    BankerWinUp1Bettor, PlayerWinUp1Bettor
 from Player import Walk3of5Bettor
 from baccarat import Outcome, Bet
 import matplotlib.pyplot as plt
@@ -80,14 +82,17 @@ if __name__ == '__main__':
     currentBet = nextBet
     gameShoe, discards = prepareShoe()
     burn_top_cards(gameShoe, discards)
-    file = open('data.out', 'a')
-    file.seek(0,2)
+    
     bfb = BankerFlatBettor() 
     pfb = PlayerFlatBettor()
     b3b = Banker3of5Bettor()
     w3b = Walk3of5Bettor()
-    players = [bfb, pfb, b3b, w3b]
+    bw1 = BankerWinUp1Bettor()
+    pw1 = PlayerWinUp1Bettor()
+    players = [w3b, bfb, b3b, bw1, pfb, pw1]
     
+    file = open('data.out', 'a')
+    file.seek(0,2)
     while len(gameShoe.cards) > 16:
 # Place bet
         for player in players:
@@ -128,16 +133,17 @@ if __name__ == '__main__':
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
+    plt.plot(walkHistory, 'yellow', label='BvP')
     for player in players:
-        print(player.name, player.stake, 
-              max(player.stake_history), min(player.stake_history))
-    plt.plot(walkHistory, 'g', label='BvP')
-    plt.plot(pfb.stake_history, 'dodgerblue', label='Player')
-    plt.plot(bfb.stake_history, 'r', label='Banker')
-    plt.plot(b3b.stake_history, 'magenta', label='B3B')
-    plt.plot(w3b.stake_history, 'y', label='W3B')
+        print(player.name,'\t', player.stake,'\t', 
+              max(player.stake_history),'\t', min(player.stake_history))
+        plt.plot(player.stake_history, label=player.name)
+#    plt.plot(pfb.stake_history, 'dodgerblue', label='Player')
+#    plt.plot(bfb.stake_history, 'r', label='Banker')
+#    plt.plot(b3b.stake_history, 'magenta', label='B3B')
+#    plt.plot(w3b.stake_history, 'yellow', label='W3B')
 
-#    plt.legend()
+    plt.legend(loc=2)
     plt.show()
 
 #    len(aShoe.cards)
