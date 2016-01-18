@@ -12,7 +12,8 @@ import pickle
 from CasinoCards import Shoe
 from getDecision import getDecision
 from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor, \
-                    BankerWinUp1Bettor, PlayerWinUp1Bettor
+                BankerWinUp1Bettor, PlayerWinUp1Bettor, RepeatWinUp1Bettor, \
+                Player3of5Bettor
 from Player import Walk3of5Bettor
 from baccarat import Outcome, Bet
 import matplotlib.pyplot as plt
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     walk = 0
     stakeHistory = []
     scorecard =[]
-    temp = []
+    BvsP = []
     walkHistory = []
     side = 'P'
     nextBet = Bet(2, bankerBet)
@@ -87,16 +88,22 @@ if __name__ == '__main__':
     pfb = PlayerFlatBettor()
     b3b = Banker3of5Bettor()
     w3b = Walk3of5Bettor()
+    p3b = Player3of5Bettor()
     bw1 = BankerWinUp1Bettor()
     pw1 = PlayerWinUp1Bettor()
-    players = [w3b, bfb, b3b, bw1, pfb, pw1]
+    rw1 = RepeatWinUp1Bettor()
+    players = [bfb, b3b, bw1, pfb, pw1, p3b, w3b, rw1]
     
     file = open('data.out', 'a')
     file.seek(0,2)
     while len(gameShoe.cards) > 16:
 # Place bet
         for player in players:
-            player.place_bet()
+            if isinstance(player, RepeatWinUp1Bettor) :
+                player.place_bet(BvsP)
+            else:
+                player.place_bet()
+
 
 # Get decision
         decision = getDecision(gameShoe, discards)
@@ -117,8 +124,10 @@ if __name__ == '__main__':
             
         if decision == 'B' or decision == 'D':
             walk += 1
+            BvsP.append('B')
         elif decision == 'P' or decision == 'p':
             walk -= 1
+            BvsP.append('P')
 
         stakeHistory.append(stake)
         walkHistory.append(walk)
