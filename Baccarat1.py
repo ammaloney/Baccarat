@@ -92,7 +92,7 @@ if __name__ == '__main__':
     bw1 = BankerWinUp1Bettor()
     pw1 = PlayerWinUp1Bettor()
     rw1 = RepeatWinUp1Bettor()
-    players = [bfb, b3b, bw1, pfb, pw1, p3b, w3b, rw1]
+    players = [b3b, p3b, bw1, pw1]
     
     file = open('data.out', 'a')
     file.seek(0,2)
@@ -111,16 +111,16 @@ if __name__ == '__main__':
 # Settle bets
         for player in players:
             if player.nextBet.outcome.name == decision:
-                player.win(player.nextBet)
+                player.win()
             elif decision == 'T' and (player.nextBet.outcome.name != 'p'
                                       or player.nextBet.outcome.name != 'D'):
-                player.push(player.nextBet)
+                player.push()
             elif player.nextBet.outcome.name == 'P' and decision == 'p':
-                player.win(player.nextBet)
+                player.win()
             elif player.nextBet.outcome.name == 'B' and decision == 'D':
-                player.push(player.nextBet)
+                player.push()
             else:
-                player.lose(player.nextBet)
+                player.lose()
             
         if decision == 'B' or decision == 'D':
             walk += 1

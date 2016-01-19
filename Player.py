@@ -45,30 +45,30 @@ class Player():
         if self.verbose: 
             print('\n{0} bets {1}'.format(self.name, self.nextBet))
         self.stake -= self.nextBet.amount
-        return self.nextBet
+#        return self.nextBet
 
-    def win(self, aBet):
-        self.stake += aBet.winAmount()
+    def win(self):
+        self.stake += self.nextBet.winAmount()
         if self.verbose: 
             print('{} Wins {} stake: {}'
-                    .format(self.name, aBet.amount, self.stake))
+                    .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.status = 'W'
         self.wl_list.append(self.status)
         
-    def lose(self, aBet):
+    def lose(self):
         if self.verbose: 
             print('{} Loses {} Stake {}'
-                    .format(self.name, aBet.amount, self.stake))
+                    .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.status = 'L'
         self.wl_list.append(self.status)
     
-    def push(self, aBet):
-        self.stake += aBet.amount
+    def push(self):
+        self.stake += self.nextBet.amount
         if self.verbose: 
             print('{} Pushes {} Stake {}'
-                    .format(self.name, aBet.amount, self.stake))
+                    .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.status = 'T'
 
@@ -91,7 +91,7 @@ class BankerFlatBettor(Player):
         self.stake -= self.nextBet.amount
         if self.verbose:
             print('\tStake: {}'.format(self.stake))
-        return self.nextBet
+#        return self.nextBet
 
 
 class PlayerFlatBettor(Player):
@@ -112,7 +112,7 @@ class PlayerFlatBettor(Player):
         self.stake -= self.nextBet.amount
         if self.verbose:
             print('\tStake: {}'.format(self.stake))
-        return self.nextBet
+#        return self.nextBet
 
 
 class BankerWinUp1Bettor(BankerFlatBettor):
@@ -138,7 +138,7 @@ class BankerWinUp1Bettor(BankerFlatBettor):
         self.stake -= self.nextBet.amount
         if self.verbose:
             print('\tStake: {}'.format(self.stake))
-        return self.nextBet
+#        return self.nextBet
 
 
 class PlayerWinUp1Bettor(PlayerFlatBettor):
@@ -182,12 +182,12 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
 
     def place_bet(self, BvsP):
         if self.status == 'W':
-            self.nextBet = Bet((self.nextBet.amount + 1), self.bankerBet)
-        elif self.status == 'L':
-            self.nextBet = Bet(2, self.bankerBet)
+            amount = (self.nextBet.amount + 1)
+        elif self.status == 'L' or self.status == None:
+            amount = 2
 
         if len(BvsP) < 2:
-            self.nextBet.outcome.name = 'B'
+            self.nextBet = Bet(amount, self.bankerBet)
             if self.verbose : 
                 print('{0} has {2} bets {1}'
                         .format(self.name, self.nextBet, self.stake), end='')
@@ -195,7 +195,7 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
             self.stake -= self.nextBet.amount
             if self.verbose:
                 print('\tStake: {}'.format(self.stake))
-            return self.nextBet
+#            return self.nextBet
         else:
             self.nextBet.outcome.name = BvsP[-2]
             if self.verbose : 
@@ -205,7 +205,7 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
             self.stake -= self.nextBet.amount
             if self.verbose:
                 print('\tStake: {}'.format(self.stake))
-            return self.nextBet
+#            return self.nextBet
 
 
 class Banker3of5Bettor(Player):
@@ -216,16 +216,17 @@ class Banker3of5Bettor(Player):
     def __init__(self):
         super().__init__()
         self.name = 'Banker 3of5'
+        self.verbose = False
         if self.verbose : 
             print('Created player {}'.format(self.name))
         self.series_wins = 0
-        self.series_length = 0
+        self.series_length = 1
         
     def place_bet(self):
         if self.series_length > 5 or self.series_wins > 2:
-            self.series_length = 0
+            self.series_length = 1
             self.series_wins = 0
-        self.nextBet = Bet(2 + self.series_length, self.bankerBet)
+        self.nextBet = Bet(1 + self.series_length, self.bankerBet)
         if self.verbose : 
             print('{0} has {2} bets {1}'
                     .format(self.name, self.nextBet, self.stake), end='')
@@ -235,29 +236,29 @@ class Banker3of5Bettor(Player):
             print('\tStake: {}'.format(self.stake))
         return self.nextBet
 
-    def win(self, aBet):
-        self.stake += aBet.winAmount()
+    def win(self):
+        self.stake += self.nextBet.winAmount()
         if self.verbose: 
             print('{} Wins {} Stake {}'
-                    .format(self.name, aBet.amount, self.stake))
+                    .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.series_wins += 1
         self.series_length += 1
         if self.series_wins > 1:
             self.series_wins = 0
-            self.series_length = 0
-        if self.series_length > 4:
-            self.series_length = 0
+            self.series_length = 1
+        if self.series_length > 5:
+            self.series_length = 1
             self.series_wins = 0
 
-    def lose(self, aBet):
+    def lose(self):
         if self.verbose: 
             print('{} Loses. Stake {}'
                     .format(self.name, self.stake))
         self.stake_history.append(self.stake)
         self.series_length += 1
-        if self.series_length > 4 : 
-            self.series_length = 0
+        if self.series_length > 5 : 
+            self.series_length = 1
             self.series_wins = 0
         
 
@@ -272,13 +273,13 @@ class Player3of5Bettor(Player):
         if self.verbose : 
             print('Created player {}'.format(self.name))
         self.series_wins = 0
-        self.series_length = 0
+        self.series_length = 1
         
     def place_bet(self):
         if self.series_length > 5 or self.series_wins > 2:
-            self.series_length = 0
+            self.series_length = 1
             self.series_wins = 0
-        self.nextBet = Bet(2 + self.series_length, self.playerBet)
+        self.nextBet = Bet(1 + self.series_length, self.playerBet)
         if self.verbose : 
             print('{0} has {2} bets {1}'
                     .format(self.name, self.nextBet, self.stake), end='')
@@ -288,22 +289,22 @@ class Player3of5Bettor(Player):
             print('\tStake: {}'.format(self.stake))
         return self.nextBet
 
-    def win(self, aBet):
-        self.stake += aBet.winAmount()
+    def win(self):
+        self.stake += self.nextBet.winAmount()
         if self.verbose: 
             print('{} Wins {} Stake {}'
-                    .format(self.name, aBet.amount, self.stake))
+                    .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.series_wins += 1
         self.series_length += 1
         if self.series_wins > 1:
             self.series_wins = 0
-            self.series_length = 0
-        if self.series_length > 4:
-            self.series_length = 0
+            self.series_length = 1
+        if self.series_length > 5:
+            self.series_length = 1
             self.series_wins = 0
 
-    def lose(self, aBet):
+    def lose(self):
         if self.verbose: 
             print('{} Loses. Stake {}'
                     .format(self.name, self.stake))
@@ -346,11 +347,11 @@ class Walk3of5Bettor(Player):
             print('\tStake: {}'.format(self.stake))
         return self.nextBet
 
-    def win(self, aBet):
-        self.stake += aBet.winAmount()
+    def win(self):
+        self.stake += self.nextBet.winAmount()
         if self.verbose: 
             print('{} Wins {} Stake {}'
-                    .format(self.name, aBet.amount, self.stake), end=' ')
+            .format(self.name, self.nextBet.amount, self.stake), end=' ')
         self.stake_history.append(self.stake)
         self.series_wins += 1
         self.series_length += 1
@@ -362,16 +363,18 @@ class Walk3of5Bettor(Player):
             self.series_length = 0
             self.series_wins = 0
 
-        if aBet.outcome.name == 'B' or aBet.outcome.name == 'D':
+        if self.nextBet.outcome.name == 'B' or \
+            self.nextBet.outcome.name == 'D':
             self.walk += 1
 
-        if aBet.outcome.name == 'P' or aBet.outcome.name == 'p':
+        if self.nextBet.outcome.name == 'P' or \
+            self.nextBet.outcome.name == 'p':
             self.walk -= 1
             
         if self.verbose:
             print('Walk = {}'.format(self.walk))
 
-    def lose(self, aBet):
+    def lose(self):
         if self.verbose: 
             print('{} Loses. Stake {}'
                     .format(self.name, self.stake), end=' ')
@@ -380,9 +383,11 @@ class Walk3of5Bettor(Player):
         if self.series_length > 4: 
             self.series_length = 0
             self.series_wins = 0
-        if aBet.outcome.name == 'B' or aBet.outcome.name == 'D':
+        if self.nextBet.outcome.name == 'B' or \
+            self.nextBet.outcome.name == 'D':
             self.walk += 1
-        if aBet.outcome.name == 'P' or aBet.outcome.name == 'p':
+        if self.nextBet.outcome.name == 'P' or \
+            self.nextBet.outcome.name == 'p':
             self.walk -= 1
         if self.verbose:
             print('Walk = {}'.format(self.walk))
