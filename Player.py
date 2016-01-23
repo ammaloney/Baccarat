@@ -27,7 +27,6 @@ class Player():
         self.stake_history = []
         self.name = aName
         self.stake = 0
-        self.wl_list = []
         self.status = None
         self.verbose = False
         self.nextBet = Bet(2, self.bankerBet)
@@ -43,10 +42,23 @@ class Player():
     def place_bet(self, scorecard = None):
         self.nextBet = Bet(2, self.bankerBet)
         if self.verbose: 
-            print('\n{0} bets {1}'.format(self.name, self.nextBet))
+            print('{0} bets {1}'.format(self.name, self.nextBet))
         self.stake -= self.nextBet.amount
 #        return self.nextBet
 
+    def settle_bets(self, decision):
+        if self.nextBet.outcome.name == decision:
+            self.win()
+        elif decision == 'T' and (self.nextBet.outcome.name != 'p'
+                                  or self.nextBet.outcome.name != 'D'):
+            self.push()
+        elif self.nextBet.outcome.name == 'P' and decision == 'p':
+            self.win()
+        elif self.nextBet.outcome.name == 'B' and decision == 'D':
+            self.push()
+        else:
+            self.lose()
+        
     def win(self):
         self.stake += self.nextBet.winAmount()
         if self.verbose: 
@@ -54,7 +66,6 @@ class Player():
                     .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.status = 'W'
-        self.wl_list.append(self.status)
         
     def lose(self):
         if self.verbose: 
@@ -62,7 +73,6 @@ class Player():
                     .format(self.name, self.nextBet.amount, self.stake))
         self.stake_history.append(self.stake)
         self.status = 'L'
-        self.wl_list.append(self.status)
     
     def push(self):
         self.stake += self.nextBet.amount
@@ -176,6 +186,7 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
     def __init__(self):
         super().__init__()
         self.verbose = False
+        self.status = None
         self.name = 'Repeat Up 1'
         if self.verbose: 
             print('Created player {}'.format(self.name))
@@ -186,7 +197,7 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
         elif self.status == 'L' or self.status == None:
             amount = 2
 
-        if len(BvsP) < 2:
+        if len(BvsP) < 3:
             self.nextBet = Bet(amount, self.bankerBet)
             if self.verbose : 
                 print('{0} has {2} bets {1}'
@@ -206,6 +217,9 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
             if self.verbose:
                 print('\tStake: {}'.format(self.stake))
 #            return self.nextBet
+    def settle_bets(self, decision):
+        Player.settle_bets(self, decision)
+        
 
 
 class Banker3of5Bettor(Player):

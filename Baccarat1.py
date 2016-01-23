@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 scorecard = []
 
 def prepareShoe():
+    '''Returns an eight deck shoe of CasinoCards and a discard pile.
+    '''
     try:
         with open('baccarat_shoe.dat', 'rb') as shoe_file:
             aShoe = pickle.load(shoe_file)
@@ -35,6 +37,12 @@ def prepareShoe():
     return aShoe, discards
     
 def burn_top_cards(aShoe, discards):
+    '''Before play begins, the dealer deals the first card from the shoe 
+    face-up then deals a number of cards face-down depending on the value of
+    the first card: for cards Ace through Nine the number of cards dealt equals
+    the number of pips on the card; for cards Ten through King ten cards are
+    dealt. The cards are then discarded with revealing their value.
+    '''
     print(aShoe.cards[-1])
     if aShoe.cards[-1].value == 0:
         aShoe.move_cards(discards, 11)
@@ -43,11 +51,17 @@ def burn_top_cards(aShoe, discards):
     
 def percentChange(startPoint, currentPoint):
     try:
+        if startPoint == 0 :
+            startPoint = 1
+            currentPoint += 1
         return((currentPoint - startPoint) / abs(startPoint)) * 100.00
     except:
         return 0
 
 def fibonacci(n):
+    '''where the fibonacci sequence for parameters 0-7 are:
+        0, 1, 1, 2, 3, 5, 8, 13
+    '''
     if n == 0:
         return 0
     elif n==1:
@@ -74,7 +88,7 @@ if __name__ == '__main__':
     bets = {'B':'Banker', 'D':'Dragon', 'P':'Player', 'p':'Panda', 'T':'Tie'}
     stake = 0
     walk = 0
-    stakeHistory = []
+#    stakeHistory = []
     scorecard =[]
     BvsP = []
     walkHistory = []
@@ -96,6 +110,9 @@ if __name__ == '__main__':
     
     file = open('data.out', 'a')
     file.seek(0,2)
+
+#----------- Main Game Loop ------------#
+
     while len(gameShoe.cards) > 16:
 # Place bet
         for player in players:
@@ -103,25 +120,12 @@ if __name__ == '__main__':
                 player.place_bet(BvsP)
             else:
                 player.place_bet()
-
-
 # Get decision
         decision = getDecision(gameShoe, discards)
-        
 # Settle bets
         for player in players:
-            if player.nextBet.outcome.name == decision:
-                player.win()
-            elif decision == 'T' and (player.nextBet.outcome.name != 'p'
-                                      or player.nextBet.outcome.name != 'D'):
-                player.push()
-            elif player.nextBet.outcome.name == 'P' and decision == 'p':
-                player.win()
-            elif player.nextBet.outcome.name == 'B' and decision == 'D':
-                player.push()
-            else:
-                player.lose()
-            
+            player.settle_bets(decision)
+      
         if decision == 'B' or decision == 'D':
             walk += 1
             BvsP.append('B')
@@ -129,10 +133,12 @@ if __name__ == '__main__':
             walk -= 1
             BvsP.append('P')
 
-        stakeHistory.append(stake)
+#        stakeHistory.append(stake)
         walkHistory.append(walk)
         scorecard.append(decision)
         file.write(decision)
+
+#-------------- End Main Loop -----------#
 
     file.write('\n')
     file.close()
@@ -152,7 +158,7 @@ if __name__ == '__main__':
 #    plt.plot(b3b.stake_history, 'magenta', label='B3B')
 #    plt.plot(w3b.stake_history, 'yellow', label='W3B')
 
-    plt.legend(loc=2)
+    plt.legend(loc=3)
     plt.show()
 
 #    len(aShoe.cards)
