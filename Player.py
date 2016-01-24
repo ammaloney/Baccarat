@@ -95,6 +95,7 @@ class BankerFlatBettor(Player):
     def __init__(self):
         super().__init__()
         self.name = 'Banker Flat'
+        self.verbose = False
         if self.verbose: 
             print('Created player {}'.format(self.name))
 
@@ -113,6 +114,7 @@ class PlayerFlatBettor(Player):
     def __init__(self):
         super().__init__()
         self.name = 'Player Flat'
+        self.verbose = False
         if self.verbose: 
             print('Created player {}'.format(self.name))
 
@@ -132,13 +134,14 @@ class BankerWinUp1Bettor(BankerFlatBettor):
     def __init__(self):
         super().__init__()
         self.name = 'Banker Up 1'
+        self.verbose = False
         if self.verbose: 
             print('Created player {}'.format(self.name))
 
     def place_bet(self):
         if self.status == 'W':
             self.bet = Bet((self.bet.amount + 1), self.bankerBet)
-        elif self.status == 'L':
+        elif self.status == 'L' or self.status == None:
             self.bet = Bet(2, self.bankerBet)
 
         if self.verbose : 
@@ -155,13 +158,15 @@ class PlayerWinUp1Bettor(PlayerFlatBettor):
     def __init__(self):
         super().__init__()
         self.name = 'Player Up 1'
+        self.verbose = False
+        self.bet = Bet(2, self.playerBet)
         if self.verbose: 
             print('Created player {}'.format(self.name))
 
     def place_bet(self):
         if self.status == 'W':
             self.bet = Bet((self.bet.amount + 1), self.playerBet)
-        elif self.status == 'L':
+        elif self.status == 'L' or self.status == None:
             self.bet = Bet(2, self.playerBet)
 
         if self.verbose : 
@@ -171,19 +176,20 @@ class PlayerWinUp1Bettor(PlayerFlatBettor):
         self.stake -= self.bet.amount
 
 
-class RepeatWinUp1Bettor(BankerFlatBettor):
+class RepeatWinUp1Bettor(Player):
     '''Player which bets that the second previous outcome will occur
     and raises the amount bet by one unit after every win.
-    BvsP is a list of previous outcomes (not including ties)
+    scorecard is a list of previous outcomes (not including ties)
     to be passed to the place_bet() method
     '''
     def __init__(self):
         super().__init__()
+        self.bet = Bet(2, self.bankerBet)
         self.verbose = False
         self.status = None
         self.scorecard = []
         self.name = 'Repeat Up 1'
-        self.bet = Bet(2, self.bankerBet)
+
         if self.verbose: 
             print('Created player {}'.format(self.name))
 
@@ -198,6 +204,7 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
                 self.bet.outcome = self.playerBet
             else:
                 print('ERROR: You should not be able to get here')
+
 #   set amount to bet
         if self.status == 'W':
             amount = self.bet.amount + 1
@@ -208,12 +215,13 @@ class RepeatWinUp1Bettor(BankerFlatBettor):
         if self.verbose : 
             print('{0} has {2} bets {1}'
                     .format(self.name, self.bet, self.stake))
-            self.stake -= self.bet.amount
+
+        self.stake -= self.bet.amount
 
     def settle_bets(self, decision):
         super().settle_bets(decision)
 
-# adjust scorecard
+# update scorecard
         if decision != 'T':
             if decision == 'B' or decision == 'D':
                 self.scorecard.append('B')

@@ -11,10 +11,11 @@ Created on Sun Aug 23 11:30:55 2015
 import pickle
 from CasinoCards import Shoe
 from getDecision import getDecision
-from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor, \
-                BankerWinUp1Bettor, PlayerWinUp1Bettor, RepeatWinUp1Bettor, \
-                Player3of5Bettor
-from Player import Walk3of5Bettor
+import Player
+#from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor, \
+#                BankerWinUp1Bettor, PlayerWinUp1Bettor, RepeatWinUp1Bettor, \
+#                Player3of5Bettor
+#from Player import Walk3of5Bettor
 #from baccarat import Outcome        #, Bet
 import matplotlib.pyplot as plt
 
@@ -34,7 +35,7 @@ def prepareShoe():
     discards = Shoe()
     discards.cards = []
     return aShoe, discards
-    
+
 def burn_top_cards(aShoe, discards):
     '''Before play begins, the dealer deals the first card from the shoe 
     face-up then deals a number of cards face-down depending on the value of
@@ -47,7 +48,7 @@ def burn_top_cards(aShoe, discards):
         aShoe.move_cards(discards, 11)
     else:
         aShoe.move_cards(discards, aShoe.cards[-1].rank + 1)
-    
+
 def percentChange(startPoint, currentPoint):
     try:
         if startPoint == 0 :
@@ -76,26 +77,26 @@ def save_shoe(aShoe, discards):
             pickle.dump(aShoe, shoe_file)
     except IOError as err:
         print('File error: ' + str(err))
-    
+
 if __name__ == '__main__':
-    stake = 0
+#    stake = 0
     walk = 0
     walkHistory = []
     scorecard = []
-    side = 'P'
+    
     gameShoe, discards = prepareShoe()
     burn_top_cards(gameShoe, discards)
-    
-    bfb = BankerFlatBettor() 
-    pfb = PlayerFlatBettor()
-    b3b = Banker3of5Bettor()
-    w3b = Walk3of5Bettor()
-    p3b = Player3of5Bettor()
-    bw1 = BankerWinUp1Bettor()
-    pw1 = PlayerWinUp1Bettor()
-    rw1 = RepeatWinUp1Bettor()
-    players = [b3b, p3b]
-    
+
+    bfb = Player.BankerFlatBettor() 
+    pfb = Player.PlayerFlatBettor()
+    b3b = Player.Banker3of5Bettor()
+    p3b = Player.Player3of5Bettor()
+    w3b = Player.Walk3of5Bettor()
+    bw1 = Player.BankerWinUp1Bettor()
+    pw1 = Player.PlayerWinUp1Bettor()
+    rw1 = Player.RepeatWinUp1Bettor()
+    players = [w3b, rw1, b3b, bw1, p3b, pw1]
+
     file = open('data.out', 'a')
     file.seek(0,2)
 
@@ -110,7 +111,7 @@ if __name__ == '__main__':
 # Settle bets
         for player in players:
             player.settle_bets(decision)
-      
+
         if decision == 'B' or decision == 'D':
             walk += 1
         elif decision == 'P' or decision == 'p':
@@ -125,27 +126,20 @@ if __name__ == '__main__':
     file.write('\n')
     file.close()
     save_shoe(gameShoe, discards)
-    
+
     print('\n', scorecard)
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
-    plt.plot(walkHistory, 'yellow', label='BvP', marker = '.', markersize=7)
+    plt.plot(walkHistory, 'yellow', label='Walk', marker = '.', markersize=7)
     for player in players:
-        print(player.name,'\t', player.stake,'\t', 
-              max(player.stake_history),'\t', min(player.stake_history))
+        print(player.name,'Stake:', player.stake,'Max:', 
+              max(player.stake_history),'Min:', min(player.stake_history))
         plt.plot(player.stake_history, marker = '.', 
                  markersize=7, label=player.name)
-#    plt.plot(pfb.stake_history, 'dodgerblue', label='Player')
-#    plt.plot(bfb.stake_history, 'r', label='Banker')
-#    plt.plot(b3b.stake_history, 'magenta', label='B3B')
-#    plt.plot(w3b.stake_history, 'yellow', label='W3B')
 
     plt.legend(loc=3)
     plt.show()
-
-#    len(aShoe.cards)
-#    len(discards.cards)
 
 
     
