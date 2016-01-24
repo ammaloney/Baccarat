@@ -15,10 +15,9 @@ from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor, \
                 BankerWinUp1Bettor, PlayerWinUp1Bettor, RepeatWinUp1Bettor, \
                 Player3of5Bettor
 from Player import Walk3of5Bettor
-from baccarat import Outcome, Bet
+#from baccarat import Outcome        #, Bet
 import matplotlib.pyplot as plt
 
-scorecard = []
 
 def prepareShoe():
     '''Returns an eight deck shoe of CasinoCards and a discard pile.
@@ -79,22 +78,11 @@ def save_shoe(aShoe, discards):
         print('File error: ' + str(err))
     
 if __name__ == '__main__':
-
-    bankerBet = Outcome('B', 1)
-    dragonBet = Outcome('D', 40)
-    playerBet = Outcome('P', 1)
-    pandaBet = Outcome('p', 25)
-    tieBet = Outcome('T', 9)
-    bets = {'B':'Banker', 'D':'Dragon', 'P':'Player', 'p':'Panda', 'T':'Tie'}
     stake = 0
     walk = 0
-#    stakeHistory = []
-    scorecard =[]
-    BvsP = []
     walkHistory = []
+    scorecard = []
     side = 'P'
-    nextBet = Bet(2, bankerBet)
-    currentBet = nextBet
     gameShoe, discards = prepareShoe()
     burn_top_cards(gameShoe, discards)
     
@@ -106,7 +94,7 @@ if __name__ == '__main__':
     bw1 = BankerWinUp1Bettor()
     pw1 = PlayerWinUp1Bettor()
     rw1 = RepeatWinUp1Bettor()
-    players = [b3b, p3b, bw1, pw1]
+    players = [b3b, p3b]
     
     file = open('data.out', 'a')
     file.seek(0,2)
@@ -116,10 +104,7 @@ if __name__ == '__main__':
     while len(gameShoe.cards) > 16:
 # Place bet
         for player in players:
-            if isinstance(player, RepeatWinUp1Bettor) :
-                player.place_bet(BvsP)
-            else:
-                player.place_bet()
+            player.place_bet()
 # Get decision
         decision = getDecision(gameShoe, discards)
 # Settle bets
@@ -128,12 +113,9 @@ if __name__ == '__main__':
       
         if decision == 'B' or decision == 'D':
             walk += 1
-            BvsP.append('B')
         elif decision == 'P' or decision == 'p':
             walk -= 1
-            BvsP.append('P')
 
-#        stakeHistory.append(stake)
         walkHistory.append(walk)
         scorecard.append(decision)
         file.write(decision)
@@ -148,11 +130,12 @@ if __name__ == '__main__':
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
-    plt.plot(walkHistory, 'yellow', label='BvP')
+    plt.plot(walkHistory, 'yellow', label='BvP', marker = '.', markersize=7)
     for player in players:
         print(player.name,'\t', player.stake,'\t', 
               max(player.stake_history),'\t', min(player.stake_history))
-        plt.plot(player.stake_history, label=player.name)
+        plt.plot(player.stake_history, marker = '.', 
+                 markersize=7, label=player.name)
 #    plt.plot(pfb.stake_history, 'dodgerblue', label='Player')
 #    plt.plot(bfb.stake_history, 'r', label='Banker')
 #    plt.plot(b3b.stake_history, 'magenta', label='B3B')
