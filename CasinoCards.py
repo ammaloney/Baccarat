@@ -9,7 +9,7 @@ Copyright 2015 Allen Downey
 
 License: http://creativecommons.org/licenses/by/4.0/
 
-Added the ability to cut the deck.
+Added the ability to cut the deck and added a 'value' attribute to Card.
 
 """
 
@@ -23,7 +23,9 @@ class Card(object):
     Attributes:
       suit: integer 0-3
       rank: integer 1-13
-      value: integer -- 1 -> 9; 10's and face cards = 0
+      value: integer -- Game value of the card
+      In Baccarat, Ace through 9 value equals number of pips1 -> 9, while
+          10s and face cards = 0
       Subclasses should override value as needed
     """
 
@@ -80,6 +82,10 @@ class Deck(object):
         for card in self.cards:
             res.append(str(card))
         return '\n'.join(res)
+    
+    def __iter__(self):
+        return iter(self.cards)
+        
 
     def add_card(self, card):
         """Adds a card to the deck.
