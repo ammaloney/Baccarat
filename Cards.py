@@ -64,7 +64,6 @@ class Deck(object):
         self.cards = []
         for suit in range(4):
             for rank in range(1, 14):
-#                game_value = rank
                 card = Card(suit, rank)
                 self.cards.append(card)
 

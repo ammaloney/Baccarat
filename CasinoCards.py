@@ -9,7 +9,7 @@ Copyright 2015 Allen Downey
 
 License: http://creativecommons.org/licenses/by/4.0/
 
-Added the ability to cut the deck and added a 'value' attribute.
+Added the ability to cut the deck and added a 'value' attribute to Card.
 
 """
 
@@ -23,7 +23,9 @@ class Card(object):
     Attributes:
       suit: integer 0-3
       rank: integer 1-13
-      value: integer -- 1 -> 9; 10's and face cards = 0
+      value: integer -- Game value of the card
+      In Baccarat, Ace through 9 value equals number of pips1 -> 9, while
+          10s and face cards = 0
       Subclasses should override value as needed
     """
 

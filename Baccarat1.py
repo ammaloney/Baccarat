@@ -12,11 +12,6 @@ import pickle
 from CasinoCards import Shoe
 from getDecision import getDecision
 import Player
-#from Player import BankerFlatBettor, PlayerFlatBettor, Banker3of5Bettor, \
-#                BankerWinUp1Bettor, PlayerWinUp1Bettor, RepeatWinUp1Bettor, \
-#                Player3of5Bettor
-#from Player import Walk3of5Bettor
-#from baccarat import Outcome        #, Bet
 import matplotlib.pyplot as plt
 
 
@@ -49,14 +44,14 @@ def burn_top_cards(aShoe, discards):
     else:
         aShoe.move_cards(discards, aShoe.cards[-1].rank + 1)
 
-def percentChange(startPoint, currentPoint):
-    try:
-        if startPoint == 0 :
-            startPoint = 1
-            currentPoint += 1
-        return((currentPoint - startPoint) / abs(startPoint)) * 100.00
-    except:
-        return 0
+#def percentChange(startPoint, currentPoint):
+#    try:
+#        if startPoint == 0 :
+#            startPoint = 1
+#            currentPoint += 1
+#        return((currentPoint - startPoint) / abs(startPoint)) * 100.00
+#    except:
+#        return 0
 
 def fibonacci(n):
     '''where the fibonacci sequence for parameters 0-7 are:
@@ -76,10 +71,9 @@ def save_shoe(aShoe, discards):
                 discards.move_cards(aShoe, len(discards.cards))
             pickle.dump(aShoe, shoe_file)
     except IOError as err:
-        print('File error: ' + str(err))
+        print('Problem writing shoe. File error: ' + str(err))
 
 if __name__ == '__main__':
-#    stake = 0
     walk = 0
     walkHistory = []
     scorecard = []
@@ -89,13 +83,16 @@ if __name__ == '__main__':
 
     bfb = Player.BankerFlatBettor() 
     pfb = Player.PlayerFlatBettor()
-    b3b = Player.Banker3of5Bettor()
-    p3b = Player.Player3of5Bettor()
-    w3b = Player.Walk3of5Bettor()
+    b2b = Player.Banker2of5Bettor()
+    p2b = Player.Player2of5Bettor()
+    w2b = Player.Walk2of5Bettor()
     bw1 = Player.BankerWinUp1Bettor()
     pw1 = Player.PlayerWinUp1Bettor()
-    rw1 = Player.RepeatWinUp1Bettor()
-    players = [w3b, rw1, b3b, bw1, p3b, pw1]
+    rw1 = Player.PatternWinUp1Bettor()
+    s2b = Player.Stake2of5Bettor()
+    pt2b = Player.Pattern2of5Bettor()
+    r2b = Player.Repeat2of5Bettor()
+    players = [w2b, r2b, s2b, pt2b, bw1, pw1, b2b, p2b]
 
     file = open('data.out', 'a')
     file.seek(0,2)
@@ -131,15 +128,15 @@ if __name__ == '__main__':
     print('Total hands:', len(scorecard), 'Banker:', scorecard.count('B'),
           'Player:', scorecard.count('P'), 'Tie:', scorecard.count('T'),
           'Panda:', scorecard.count('p'), 'Dragon:', scorecard.count('D'))
-    plt.plot(walkHistory, 'yellow', label='Walk', marker = '.', markersize=7)
+#    plt.plot(walkHistory, 'yellow', label='Walk', marker = '.', markersize=7)
     for player in players:
         print(player.name,'Stake:', player.stake,'Max:', 
               max(player.stake_history),'Min:', min(player.stake_history))
-        plt.plot(player.stake_history, marker = '.', 
-                 markersize=7, label=player.name)
-
-    plt.legend(loc=3)
-    plt.show()
+#        plt.plot(player.stake_history, marker = '.', 
+#                 markersize=7, label=player.name)
+#
+#    plt.legend(loc=3)
+#    plt.show()
 
 
     
